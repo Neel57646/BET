@@ -68,6 +68,7 @@ To send for real, set `DRY_RUN=false` and use a Gmail app password, not your nor
 
 The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger. It also pulls completed scores from the last 3 days before scanning odds.
 If no value bet passes the threshold, it sends a no-value-bets status email at most once every 6 hours.
+It also writes `docs/data/latest.json` for the static dashboard in `docs/index.html`.
 
 Add these repository secrets in GitHub:
 
@@ -90,6 +91,18 @@ cricket_international_t20
 ```
 
 Tennis is tournament-specific in most odds feeds, so add active tennis keys to `WATCHED_SPORTS` when the tournament is available.
+
+## Online Dashboard
+
+The dashboard lives in the `docs` folder. To publish it with GitHub Pages:
+
+1. Open repository settings.
+2. Go to `Pages`.
+3. Set source to `Deploy from a branch`.
+4. Choose branch `main` and folder `/docs`.
+5. Save.
+
+The page will load the latest scan data from `docs/data/latest.json`.
 
 ## Data Files
 
