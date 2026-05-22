@@ -66,8 +66,9 @@ To send for real, set `DRY_RUN=false` and use a Gmail app password, not your nor
 
 ## GitHub Actions 24/7 Trigger
 
-The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger. It also pulls completed scores from the last 3 days before scanning odds.
-If no value bet passes the threshold, it sends a no-value-bets status email at most once every 6 hours.
+The workflow in `.github/workflows/sports-ev-alert.yml` runs once per day online, like the crypto trigger. The schedule is `23:00 UTC`, which is about 9:00 AM in Sydney during AEST and 10:00 AM during AEDT.
+It pulls completed scores from the last 3 days before scanning odds.
+If no value bet passes the threshold, it sends a no-value-bets status email at most once per day.
 It also writes `docs/data/latest.json` for the static dashboard in `docs/index.html`.
 If Gmail rejects the app password, the dashboard still updates and the workflow shows an email warning.
 
@@ -85,11 +86,10 @@ The workflow scans these sport keys by default:
 ```text
 aussierules_afl
 basketball_nba
-soccer_epl
 cricket_ipl
-cricket_big_bash
-cricket_international_t20
 ```
+
+With the default 3 sports, 1 region, 1 market, and recent scores enabled, each daily scan uses up to about 9 Odds API credits: 3 odds credits plus 6 scores credits.
 
 Tennis is tournament-specific in most odds feeds, so add active tennis keys to `WATCHED_SPORTS` when the tournament is available.
 
