@@ -55,3 +55,20 @@ def remember(candidate: ValueCandidate, state: dict[str, Any]) -> None:
 def alert_key(candidate: ValueCandidate) -> str:
     event_id = candidate.event.event_id or f"{candidate.event.sport_key}:{candidate.event.away_team}:{candidate.event.home_team}"
     return f"{event_id}:{candidate.side}:{candidate.recommendation}"
+
+
+def should_send_empty_report(state: dict[str, Any]) -> bool:
+    cooldown_hours = int(os.getenv("EMPTY_REPORT_COOLDOWN_HOURS", "6"))
+    previous = state.get("empty-report")
+    if not previous:
+        return True
+    now = int(time.time())
+    return now - int(previous.get("sent_at", 0)) >= cooldown_hours * 3600
+
+
+def remember_empty_report(state: dict[str, Any], scanned_events: int, ranked_candidates: int) -> None:
+    state["empty-report"] = {
+        "sent_at": int(time.time()),
+        "scanned_events": scanned_events,
+        "ranked_candidates": ranked_candidates,
+    }
