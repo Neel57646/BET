@@ -1,0 +1,36 @@
+date,sport,home_team,away_team,home_score,away_score,neutral
+2026-02-01,aussierules_afl,Sydney Swans,Collingwood,97,83,false
+2026-02-08,aussierules_afl,Brisbane Lions,Sydney Swans,76,92,false
+2026-02-15,aussierules_afl,Sydney Swans,Carlton,104,71,false
+2026-02-22,aussierules_afl,Melbourne,Sydney Swans,82,79,false
+2026-03-01,aussierules_afl,Sydney Swans,Geelong,91,72,false
+2026-03-08,aussierules_afl,Collingwood,Carlton,74,87,false
+2026-03-15,aussierules_afl,Geelong,Collingwood,96,68,false
+2026-03-22,aussierules_afl,Collingwood,Melbourne,79,86,false
+2026-03-29,aussierules_afl,Brisbane Lions,Collingwood,101,75,false
+2026-04-05,aussierules_afl,Collingwood,Geelong,88,93,false
+2026-02-01,basketball_nba,Boston Celtics,New York Knicks,118,104,false
+2026-02-04,basketball_nba,Milwaukee Bucks,Boston Celtics,105,113,false
+2026-02-08,basketball_nba,Boston Celtics,Miami Heat,121,97,false
+2026-02-12,basketball_nba,New York Knicks,Boston Celtics,109,116,false
+2026-02-16,basketball_nba,Boston Celtics,Cleveland Cavaliers,112,108,false
+2026-02-03,basketball_nba,New York Knicks,Miami Heat,101,106,false
+2026-02-07,basketball_nba,Cleveland Cavaliers,New York Knicks,117,103,false
+2026-02-11,basketball_nba,New York Knicks,Milwaukee Bucks,99,112,false
+2026-02-15,basketball_nba,Miami Heat,New York Knicks,108,102,false
+2026-02-19,basketball_nba,New York Knicks,Cleveland Cavaliers,104,110,false
+2026-02-02,soccer_epl,Arsenal,Chelsea,2,0,false
+2026-02-06,soccer_epl,Liverpool,Arsenal,1,2,false
+2026-02-10,soccer_epl,Arsenal,Tottenham,3,1,false
+2026-02-14,soccer_epl,Manchester City,Arsenal,1,1,false
+2026-02-18,soccer_epl,Arsenal,Newcastle,2,0,false
+2026-02-03,soccer_epl,Chelsea,Tottenham,1,2,false
+2026-02-07,soccer_epl,Newcastle,Chelsea,2,1,false
+2026-02-11,soccer_epl,Chelsea,Liverpool,0,0,false
+2026-02-15,soccer_epl,Manchester City,Chelsea,3,1,false
+2026-02-19,soccer_epl,Chelsea,Newcastle,1,1,false
+2026-03-01,tennis_atp_french_open,Carlos Alcaraz,Example Opponent,3,1,true
+2026-03-03,tennis_atp_french_open,Carlos Alcaraz,Sample Player,3,0,true
+2026-03-05,tennis_atp_french_open,Carlos Alcaraz,Another Player,3,1,true
+2026-03-07,tennis_atp_french_open,Example Opponent,Sample Player,2,3,true
+2026-03-09,tennis_atp_french_open,Another Player,Example Opponent,3,2,true
