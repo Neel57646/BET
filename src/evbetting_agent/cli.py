@@ -132,5 +132,8 @@ def fetch_events(args: argparse.Namespace, settings: Settings, odds_path: Path, 
     client = client or TheOddsAPIClient(settings.odds_api_key)
     events = []
     for sport in parse_csv(args.sports, settings.sports):
-        events.extend(client.fetch_odds(sport=sport, regions=args.regions, markets=args.markets))
+        try:
+            events.extend(client.fetch_odds(sport=sport, regions=args.regions, markets=args.markets))
+        except OddsAPIError as exc:
+            print(f"{sport}: odds skipped ({exc})")
     return events
