@@ -7,7 +7,7 @@ from typing import Any
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from .models import EventOdds, OutcomeOdds
+from .models import EventOdds, HistoricalMatch, OutcomeOdds
 
 
 API_BASE = "https://api.the-odds-api.com"
@@ -50,6 +50,16 @@ class TheOddsAPIClient:
         if not isinstance(payload, list):
             raise OddsAPIError("Unexpected sports response")
         return payload
+
+    def fetch_scores(self, sport: str, days_from: int | None = 3) -> list[HistoricalMatch]:
+        params: dict[str, str | int] = {
+            "apiKey": self.api_key,
+            "dateFormat": "iso",
+        }
+        if days_from is not None:
+            params["daysFrom"] = max(1, min(3, days_from))
+        payload = self._get_json(f"/v4/sports/{sport}/scores/?{urlencode(params)}")
+        return parse_score_events(payload, sport)
 
     def _get_json(self, path: str) -> Any:
         request = Request(f"{self.base_url}{path}", headers={"Accept": "application/json"})
@@ -104,6 +114,57 @@ def parse_events(payload: Any) -> list[EventOdds]:
             )
         )
     return events
+
+
+def parse_score_events(payload: Any, sport: str) -> list[HistoricalMatch]:
+    if not isinstance(payload, list):
+        raise OddsAPIError("Scores payload must be a list of events")
+
+    matches: list[HistoricalMatch] = []
+    for item in payload:
+        if not item.get("completed"):
+            continue
+
+        home_team = str(item.get("home_team", ""))
+        away_team = str(item.get("away_team", ""))
+        scores: dict[str, float] = {}
+        for score in item.get("scores") or []:
+            if not score.get("name") or score.get("score") is None:
+                continue
+            try:
+                scores[str(score.get("name"))] = parse_score_value(score.get("score"))
+            except ValueError:
+                continue
+        if home_team not in scores or away_team not in scores:
+            continue
+
+        matches.append(
+            HistoricalMatch(
+                date=parse_datetime(item.get("commence_time")) or datetime.min,
+                sport=str(item.get("sport_key") or sport),
+                home_team=home_team,
+                away_team=away_team,
+                home_score=scores[home_team],
+                away_score=scores[away_team],
+                neutral=False,
+            )
+        )
+    return matches
+
+
+def parse_score_value(value: Any) -> float:
+    text = str(value).strip()
+    if not text:
+        raise ValueError("Missing score value")
+    number = []
+    for char in text:
+        if char.isdigit() or char in {".", "-"}:
+            number.append(char)
+        elif number:
+            break
+    if not number:
+        raise ValueError(f"Cannot parse score value: {value!r}")
+    return float("".join(number))
 
 
 def parse_datetime(value: str | None) -> datetime | None:
