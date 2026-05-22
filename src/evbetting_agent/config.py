@@ -7,10 +7,7 @@ from dataclasses import dataclass
 DEFAULT_SPORTS = (
     "aussierules_afl",
     "basketball_nba",
-    "soccer_epl",
     "cricket_ipl",
-    "cricket_big_bash",
-    "cricket_international_t20",
 )
 
 
