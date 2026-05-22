@@ -7,6 +7,7 @@ The first implementation supports:
 - Upcoming/live odds from The Odds API when `ODDS_API_KEY` is configured
 - Local JSON odds files for testing or backfills
 - Historical match CSV modeling with Elo, recent form, home/away splits, and draw-rate handling
+- Recent completed scores refresh from The Odds API in live trigger mode
 - Implied probability, edge, EV, confidence score, and alert filtering
 - Text, JSON, and Gmail alert output
 - GitHub Actions scheduled trigger, matching the crypto trigger pattern
@@ -34,6 +35,13 @@ $env:ODDS_API_KEY="your_api_key"
 powershell -ExecutionPolicy Bypass -File .\scripts\run-agent.ps1 --live --sports aussierules_afl,basketball_nba,soccer_epl --regions au --markets h2h
 ```
 
+Run live odds with recent completed scores added to the model:
+
+```powershell
+$env:ODDS_API_KEY="your_api_key"
+powershell -ExecutionPolicy Bypass -File .\scripts\run-agent.ps1 --live --include-scores --scores-days 3 --send-email
+```
+
 If you prefer direct Python commands, either install the package with `python -m pip install -e .` or set `PYTHONPATH=src` before running `python -m evbetting_agent`.
 
 ## Email Trigger
@@ -58,7 +66,7 @@ To send for real, set `DRY_RUN=false` and use a Gmail app password, not your nor
 
 ## GitHub Actions 24/7 Trigger
 
-The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger.
+The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger. It also pulls completed scores from the last 3 days before scanning odds.
 
 Add these repository secrets in GitHub:
 
