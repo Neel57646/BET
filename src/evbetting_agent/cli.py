@@ -10,7 +10,7 @@ from .email_delivery import build_alert_email, send_email
 from .env import load_env
 from .ev import high_confidence_alerts, scan_events
 from .history import HistoricalModel, load_history_csv
-from .odds_api import TheOddsAPIClient, load_odds_file
+from .odds_api import OddsAPIError, TheOddsAPIClient, load_odds_file
 from .state import load_state, remember, save_state, should_send
 
 
@@ -27,6 +27,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--history", default=str(SAMPLE_HISTORY), help="Historical match CSV path.")
     parser.add_argument("--odds", default=str(SAMPLE_ODDS), help="Local odds JSON path.")
     parser.add_argument("--live", action="store_true", help="Fetch live/upcoming odds from The Odds API.")
+    parser.add_argument("--include-scores", action="store_true", help="Use recent completed scores to refresh the model in live mode.")
+    parser.add_argument("--scores-days", type=int, default=3, help="Completed score lookback, 1-3 days.")
     parser.add_argument("--sports", default=",".join(settings.sports), help="Comma-separated The Odds API sport keys.")
     parser.add_argument("--regions", default=settings.regions, help="Bookmaker regions, for example au,us,uk,eu.")
     parser.add_argument("--markets", default=settings.markets, help="Markets to request, default h2h.")
@@ -42,8 +44,12 @@ def main(argv: list[str] | None = None) -> int:
     history_path = SAMPLE_HISTORY if args.sample else Path(args.history)
     odds_path = SAMPLE_ODDS if args.sample else Path(args.odds)
 
-    historical = HistoricalModel(load_history_csv(history_path))
-    events = fetch_events(args, settings, odds_path)
+    base_history = load_history_csv(history_path)
+    client = TheOddsAPIClient(settings.odds_api_key) if args.live and settings.odds_api_key else None
+    if args.include_scores and args.live and client:
+        base_history = extend_history_with_scores(base_history, client, args, settings)
+    historical = HistoricalModel(base_history)
+    events = fetch_events(args, settings, odds_path, client)
     candidates = scan_events(events, historical, min_edge=args.min_edge, min_confidence=args.min_confidence)
     selected = candidates if args.all else high_confidence_alerts(candidates, args.min_edge, args.min_confidence)
 
@@ -86,14 +92,44 @@ def send_alerts(candidates, state_path: str) -> int:
     return 0
 
 
-def fetch_events(args: argparse.Namespace, settings: Settings, odds_path: Path):
+def extend_history_with_scores(matches, client: TheOddsAPIClient, args: argparse.Namespace, settings: Settings):
+    combined = list(matches)
+    seen = {history_key(match) for match in combined}
+    for sport in parse_csv(args.sports, settings.sports):
+        try:
+            recent = client.fetch_scores(sport=sport, days_from=args.scores_days)
+        except OddsAPIError as exc:
+            print(f"{sport}: scores skipped ({exc})")
+            continue
+        added = 0
+        for match in recent:
+            key = history_key(match)
+            if key in seen:
+                continue
+            combined.append(match)
+            seen.add(key)
+            added += 1
+        print(f"{sport}: added {added} recent completed scores")
+    return combined
+
+
+def history_key(match) -> tuple[str, str, str, str]:
+    return (
+        match.sport,
+        match.date.date().isoformat(),
+        match.home_team,
+        match.away_team,
+    )
+
+
+def fetch_events(args: argparse.Namespace, settings: Settings, odds_path: Path, client: TheOddsAPIClient | None = None):
     if not args.live:
         return load_odds_file(odds_path)
 
     if not settings.odds_api_key:
         raise SystemExit("ODDS_API_KEY is required for --live mode.")
 
-    client = TheOddsAPIClient(settings.odds_api_key)
+    client = client or TheOddsAPIClient(settings.odds_api_key)
     events = []
     for sport in parse_csv(args.sports, settings.sports):
         events.extend(client.fetch_odds(sport=sport, regions=args.regions, markets=args.markets))
