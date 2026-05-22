@@ -1,0 +1,50 @@
+name: Sports EV Trigger Alerts
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore alert cooldown state
+        uses: actions/cache/restore@v4
+        with:
+          path: alert_state.json
+          key: sports-alert-state-${{ github.run_id }}
+          restore-keys: |
+            sports-alert-state-
+
+      - name: Run sports EV alert scanner
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          ODDS_REGIONS: au
+          ODDS_MARKETS: h2h
+          WATCHED_SPORTS: aussierules_afl,basketball_nba,soccer_epl,cricket_ipl,cricket_big_bash,cricket_international_t20
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALERT_COOLDOWN_HOURS: "24"
+          DRY_RUN: "false"
+        run: |
+          python -m pip install -e .
+          python -m evbetting_agent --live --send-email --state alert_state.json
+
+      - name: Save alert cooldown state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: alert_state.json
+          key: sports-alert-state-${{ github.run_id }}
