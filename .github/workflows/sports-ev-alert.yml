@@ -19,6 +19,22 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate required secrets
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          missing=0
+          for name in ODDS_API_KEY ALERT_EMAIL_FROM ALERT_EMAIL_TO GMAIL_APP_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing required secret::$name is not configured in this repository"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
       - name: Restore alert cooldown state
         uses: actions/cache/restore@v4
         with:
@@ -43,6 +59,10 @@ jobs:
           python -m evbetting_agent --live --include-scores --scores-days 3 --send-email --state alert_state.json
 
       - name: Save alert cooldown state
+        if: always()
+        run: test -f alert_state.json || echo '{}' > alert_state.json
+
+      - name: Save alert cooldown cache
         if: always()
         uses: actions/cache/save@v4
         with:
