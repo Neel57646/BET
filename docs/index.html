@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sports EV Dashboard</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Positive EV Scanner</p>
+        <h1>Sports EV Dashboard</h1>
+      </div>
+      <a class="repo-link" href="https://github.com/Neel57646/BET/actions" target="_blank" rel="noreferrer">Runs</a>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="scan summary">
+        <div class="metric">
+          <span>Status</span>
+          <strong id="status">Loading</strong>
+        </div>
+        <div class="metric">
+          <span>Value Bets</span>
+          <strong id="alert-count">0</strong>
+        </div>
+        <div class="metric">
+          <span>Scanned Events</span>
+          <strong id="scanned-events">0</strong>
+        </div>
+        <div class="metric">
+          <span>Last Updated</span>
+          <strong id="last-updated">-</strong>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Value Bets</h2>
+          <span id="alert-note">Edge &gt;= 7%, positive EV, confidence &gt;= 70</span>
+        </div>
+        <div id="alerts" class="list"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Watchlist</h2>
+          <span>Positive EV candidates below alert threshold</span>
+        </div>
+        <div id="watchlist" class="list"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Ranked Scan</h2>
+          <span>Top model outputs from the latest run</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Match</th>
+                <th>Side</th>
+                <th>Odds</th>
+                <th>Model</th>
+                <th>Edge</th>
+                <th>EV</th>
+                <th>Confidence</th>
+                <th>Call</th>
+              </tr>
+            </thead>
+            <tbody id="ranked"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
