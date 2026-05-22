@@ -2,7 +2,7 @@ name: Sports EV Trigger Alerts
 
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "0 23 * * *"
   workflow_dispatch:
 
 permissions:
@@ -51,7 +51,7 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ODDS_REGIONS: au
           ODDS_MARKETS: h2h
-          WATCHED_SPORTS: aussierules_afl,basketball_nba,soccer_epl,cricket_ipl,cricket_big_bash,cricket_international_t20
+          WATCHED_SPORTS: aussierules_afl,basketball_nba,cricket_ipl
           ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
           ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
