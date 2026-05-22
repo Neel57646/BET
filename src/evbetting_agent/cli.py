@@ -87,8 +87,9 @@ def send_alerts(candidates, state_path: str, scanned_events: int = 0, ranked_can
         if send_empty and should_send_empty_report(state):
             message = build_no_alert_email(scanned_events, ranked_candidates)
             print(message)
-            if not dry_run:
-                send_email(message)
+            if not dry_run and not try_send_email(message):
+                print("Done. No-value-bets report could not be emailed, but the scan completed.")
+                return 0
             remember_empty_report(state, scanned_events, ranked_candidates)
             save_state(state_path, state)
             print("Done. One no-value-bets sports EV summary email sent.")
@@ -98,13 +99,23 @@ def send_alerts(candidates, state_path: str, scanned_events: int = 0, ranked_can
 
     message = build_alert_email(to_send)
     print(message)
-    if not dry_run:
-        send_email(message)
+    if not dry_run and not try_send_email(message):
+        print("Done. Value-bet email could not be sent, but the scan completed.")
+        return 0
     for candidate in to_send:
         remember(candidate, state)
     save_state(state_path, state)
     print(f"Done. One sports EV summary email {'printed' if dry_run else 'sent'} with {len(to_send)} alerts.")
     return 0
+
+
+def try_send_email(message) -> bool:
+    try:
+        send_email(message)
+    except Exception as exc:
+        print(f"::warning title=Email send failed::{exc}")
+        return False
+    return True
 
 
 def extend_history_with_scores(matches, client: TheOddsAPIClient, args: argparse.Namespace, settings: Settings):
