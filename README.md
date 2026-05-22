@@ -69,6 +69,7 @@ To send for real, set `DRY_RUN=false` and use a Gmail app password, not your nor
 The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger. It also pulls completed scores from the last 3 days before scanning odds.
 If no value bet passes the threshold, it sends a no-value-bets status email at most once every 6 hours.
 It also writes `docs/data/latest.json` for the static dashboard in `docs/index.html`.
+If Gmail rejects the app password, the dashboard still updates and the workflow shows an email warning.
 
 Add these repository secrets in GitHub:
 
