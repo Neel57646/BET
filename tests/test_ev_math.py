@@ -3,6 +3,7 @@ import unittest
 from evbetting_agent.ev import high_confidence_alerts, scan_events
 from evbetting_agent.history import HistoricalModel
 from evbetting_agent.models import EventOdds, HistoricalMatch, OutcomeOdds
+from evbetting_agent.odds_api import parse_score_events, parse_score_value
 
 
 class EVMathTests(unittest.TestCase):
@@ -44,6 +45,29 @@ class EVMathTests(unittest.TestCase):
         candidates = scan_events([event], history, min_edge=0.07, min_confidence=70)
         alerts = high_confidence_alerts(candidates, min_edge=0.07, min_confidence=70)
         self.assertTrue(any(candidate.side == "Home" for candidate in alerts))
+
+    def test_score_payload_converts_to_history(self):
+        payload = [
+            {
+                "id": "score-1",
+                "sport_key": "basketball_nba",
+                "commence_time": "2026-05-20T10:00:00Z",
+                "completed": True,
+                "home_team": "Home",
+                "away_team": "Away",
+                "scores": [
+                    {"name": "Home", "score": "112"},
+                    {"name": "Away", "score": "106"},
+                ],
+            }
+        ]
+        matches = parse_score_events(payload, "basketball_nba")
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0].home_score, 112)
+        self.assertEqual(matches[0].away_score, 106)
+
+    def test_cricket_score_parses_runs_before_wickets(self):
+        self.assertEqual(parse_score_value("164/5"), 164)
 
 
 if __name__ == "__main__":
