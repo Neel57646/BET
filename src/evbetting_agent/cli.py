@@ -6,12 +6,12 @@ from pathlib import Path
 
 from .alerts import candidates_to_json, format_candidate, format_email
 from .config import Settings, parse_csv
-from .email_delivery import build_alert_email, send_email
+from .email_delivery import build_alert_email, build_no_alert_email, send_email
 from .env import load_env
 from .ev import high_confidence_alerts, scan_events
 from .history import HistoricalModel, load_history_csv
 from .odds_api import OddsAPIError, TheOddsAPIClient, load_odds_file
-from .state import load_state, remember, save_state, should_send
+from .state import load_state, remember, remember_empty_report, save_state, should_send, should_send_empty_report
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
     selected = candidates if args.all else high_confidence_alerts(candidates, args.min_edge, args.min_confidence)
 
     if args.send_email:
-        return send_alerts(selected, args.state)
+        return send_alerts(selected, args.state, scanned_events=len(events), ranked_candidates=len(candidates))
 
     if args.json:
         print(candidates_to_json(selected))
@@ -72,12 +72,22 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def send_alerts(candidates, state_path: str) -> int:
+def send_alerts(candidates, state_path: str, scanned_events: int = 0, ranked_candidates: int = 0) -> int:
     dry_run = os.getenv("DRY_RUN", "true").lower() == "true"
     state = load_state(state_path)
     to_send = [candidate for candidate in candidates if should_send(candidate, state)]
 
     if not to_send:
+        send_empty = os.getenv("SEND_EMPTY_REPORT", "false").lower() == "true"
+        if send_empty and should_send_empty_report(state):
+            message = build_no_alert_email(scanned_events, ranked_candidates)
+            print(message)
+            if not dry_run:
+                send_email(message)
+            remember_empty_report(state, scanned_events, ranked_candidates)
+            save_state(state_path, state)
+            print("Done. One no-value-bets sports EV summary email sent.")
+            return 0
         print("Done. No new sports EV alerts to send.")
         return 0
 
