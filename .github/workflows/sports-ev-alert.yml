@@ -57,7 +57,7 @@ jobs:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           ALERT_COOLDOWN_HOURS: "24"
           SEND_EMPTY_REPORT: "true"
-          EMPTY_REPORT_COOLDOWN_HOURS: "6"
+          EMPTY_REPORT_COOLDOWN_HOURS: "24"
           DRY_RUN: "false"
         run: |
           python -m pip install -e .
