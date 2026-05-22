@@ -61,6 +61,48 @@ def build_alert_email(candidates: list[ValueCandidate]) -> EmailMessage:
     return message
 
 
+def build_no_alert_email(scanned_events: int, ranked_candidates: int) -> EmailMessage:
+    sender = os.environ["ALERT_EMAIL_FROM"]
+    recipient = os.environ["ALERT_EMAIL_TO"]
+    subject = "Sports EV Scan Summary - No Value Bets"
+
+    plain_body = f"""Sports EV Scan Summary
+
+No high-confidence value bets were found in this run.
+
+Scanned events: {scanned_events}
+Ranked candidates: {ranked_candidates}
+Alert rule: edge >= 7%, EV positive, confidence >= 70/100.
+
+This means the scanner ran, but no opportunity passed the alert threshold.
+"""
+    html_body = f"""
+<html>
+<body style="margin: 0; padding: 12px; background-color: #f6f6f6;">
+  <div style="max-width: 680px; margin: auto; font-family: Arial, sans-serif;">
+    <h1 style="font-size: 22px; margin-bottom: 8px;">Sports EV Scan Summary</h1>
+    <p>No high-confidence value bets were found in this run.</p>
+    <p>
+      <strong>Scanned events:</strong> {scanned_events}<br>
+      <strong>Ranked candidates:</strong> {ranked_candidates}<br>
+      <strong>Alert rule:</strong> edge at least 7%, positive EV, confidence at least 70/100.
+    </p>
+    <p style="font-size: 12px; color: #666;">
+      This means the scanner ran, but no opportunity passed the alert threshold.
+    </p>
+  </div>
+</body>
+</html>
+"""
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = recipient
+    message["Subject"] = subject
+    message.set_content(plain_body)
+    message.add_alternative(html_body, subtype="html")
+    return message
+
+
 def send_email(message: EmailMessage) -> None:
     password = os.environ["GMAIL_APP_PASSWORD"].replace(" ", "")
     context = ssl.create_default_context()
