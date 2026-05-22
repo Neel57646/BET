@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .alerts import candidates_to_json, format_candidate, format_email
 from .config import Settings, parse_csv
+from .dashboard import write_dashboard_json
 from .email_delivery import build_alert_email, build_no_alert_email, send_email
 from .env import load_env
 from .ev import high_confidence_alerts, scan_events
@@ -38,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--email", action="store_true", help="Print email alert templates for alerts.")
     parser.add_argument("--send-email", action="store_true", help="Send one Gmail summary email for eligible alerts.")
     parser.add_argument("--state", default="alert_state.json", help="Cooldown state path for sent alerts.")
+    parser.add_argument("--dashboard-json", help="Write latest scan data for the static dashboard.")
     parser.add_argument("--json", action="store_true", help="Output JSON.")
     args = parser.parse_args(argv)
 
@@ -52,6 +54,9 @@ def main(argv: list[str] | None = None) -> int:
     events = fetch_events(args, settings, odds_path, client)
     candidates = scan_events(events, historical, min_edge=args.min_edge, min_confidence=args.min_confidence)
     selected = candidates if args.all else high_confidence_alerts(candidates, args.min_edge, args.min_confidence)
+
+    if args.dashboard_json:
+        write_dashboard_json(args.dashboard_json, events, candidates, selected)
 
     if args.send_email:
         return send_alerts(selected, args.state, scanned_events=len(events), ranked_candidates=len(candidates))
