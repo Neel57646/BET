@@ -1,0 +1,115 @@
+[
+  {
+    "id": "sample-afl-1",
+    "sport_key": "aussierules_afl",
+    "commence_time": "2026-05-23T09:30:00Z",
+    "home_team": "Sydney Swans",
+    "away_team": "Collingwood",
+    "bookmakers": [
+      {
+        "key": "samplebook_a",
+        "title": "SampleBook A",
+        "last_update": "2026-05-22T10:00:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Sydney Swans", "price": 2.05},
+              {"name": "Collingwood", "price": 1.80}
+            ]
+          }
+        ]
+      },
+      {
+        "key": "samplebook_b",
+        "title": "SampleBook B",
+        "last_update": "2026-05-22T10:05:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Sydney Swans", "price": 2.10},
+              {"name": "Collingwood", "price": 1.77}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sample-nba-1",
+    "sport_key": "basketball_nba",
+    "commence_time": "2026-05-23T00:30:00Z",
+    "home_team": "Boston Celtics",
+    "away_team": "New York Knicks",
+    "bookmakers": [
+      {
+        "key": "samplebook_a",
+        "title": "SampleBook A",
+        "last_update": "2026-05-22T10:00:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Boston Celtics", "price": 1.92},
+              {"name": "New York Knicks", "price": 1.93}
+            ]
+          }
+        ]
+      },
+      {
+        "key": "samplebook_c",
+        "title": "SampleBook C",
+        "last_update": "2026-05-22T10:06:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Boston Celtics", "price": 1.95},
+              {"name": "New York Knicks", "price": 1.88}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sample-epl-1",
+    "sport_key": "soccer_epl",
+    "commence_time": "2026-05-23T14:00:00Z",
+    "home_team": "Arsenal",
+    "away_team": "Chelsea",
+    "bookmakers": [
+      {
+        "key": "samplebook_a",
+        "title": "SampleBook A",
+        "last_update": "2026-05-22T10:00:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Arsenal", "price": 2.35},
+              {"name": "Chelsea", "price": 3.10},
+              {"name": "Draw", "price": 3.40}
+            ]
+          }
+        ]
+      },
+      {
+        "key": "samplebook_b",
+        "title": "SampleBook B",
+        "last_update": "2026-05-22T10:04:00Z",
+        "markets": [
+          {
+            "key": "h2h",
+            "outcomes": [
+              {"name": "Arsenal", "price": 2.42},
+              {"name": "Chelsea", "price": 3.00},
+              {"name": "Draw", "price": 3.45}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
