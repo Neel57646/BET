@@ -67,6 +67,7 @@ To send for real, set `DRY_RUN=false` and use a Gmail app password, not your nor
 ## GitHub Actions 24/7 Trigger
 
 The workflow in `.github/workflows/sports-ev-alert.yml` runs every 15 minutes online, like the crypto trigger. It also pulls completed scores from the last 3 days before scanning odds.
+If no value bet passes the threshold, it sends a no-value-bets status email at most once every 6 hours.
 
 Add these repository secrets in GitHub:
 
